@@ -187,7 +187,7 @@ async function execute(message, serverQueue) {//음악실행 함수
         
       return;
     }
-    let stream = await play_dl.stream(song.url);
+    let stream = await play_dl.stream(serverQueue.songs[0].url);
     const resource = createAudioResource(stream.stream, {
       inputType: stream.type
   });
