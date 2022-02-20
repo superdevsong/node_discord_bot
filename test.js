@@ -1,9 +1,8 @@
 const Discord = require("discord.js");//discord 모듈 import 
 const config = require("./config.json");//설정파일 파싱 
 const play_dl = require('play-dl');//유튜브나 spotify 검색과 스트리밍을 도와주느 api 
-const execute = require('./music/execute');
-const { joinVoiceChannel ,createAudioPlayer,createAudioResource,AudioPlayerStatus } = require('@discordjs/voice');
-//join
+const Music = require('./music/music');
+
 const prefix = "!";
 const queue = new Map(); // 노래정보를 담을 컬렉션 생성 guild.id와 songinfo를 key 와 value로 넣을 것이다.
 
@@ -29,71 +28,26 @@ client.on('messageCreate', (message) => {//event 리스너 등록 messageCreate�
     } 
 
     if (command ==="play") {
-        execute(queue,message, serverQueue);
+        Music.execute(queue,message, serverQueue);
         return;
     } else if (command ==="skip") {
-        skip(message, serverQueue);
+        Music.skip(queue,message, serverQueue);
         return;
     } else if (command ==="stop") {
-        stop(message, serverQueue);
+        Music.stop(message, serverQueue);
         return;
     } else if (command ==="resume") {
-        resume(message, serverQueue);
+        Music.resume(message, serverQueue);
       return;
   } else {
         message.channel.send("You need to enter a valid command!");
     }
 });
-
-
+ 
   
-  function skip(message, serverQueue) {
-    if (!message.member.voice.channel)
-      return message.channel.send(
-        "You have to be in a voice channel to stop the music!"
-      );
-    if (!serverQueue)
-      return message.channel.send("There is no song that I could skip!");
-      getNextResource(message.guild,serverQueue,serverQueue.player);
-  }
-  
-  function stop(message, serverQueue) {
-    if (!message.member.voice.channel)
-      return message.channel.send(
-        "You have to be in a voice channel to stop the music!"
-      );
-      
-    if (!serverQueue)
-      return message.channel.send("There is no song that I could stop!");
-      
-    serverQueue.player.pause();
-  }
-  function resume(message, serverQueue) {//다시재
-    if (!message.member.voice.channel)
-      return message.channel.send(
-        "You have to be in a voice channel to stop the music!"
-      );
-      
-    if (!serverQueue)
-      return message.channel.send("There is no song that I could stop!");
-      
-    serverQueue.player.unpause();
-  }
+ 
   
   
-  async function getNextResource(guild,serverQueue,player){//다음곡을 틀어주는 함수
-    serverQueue.songs.shift();
-    if(!serverQueue.songs[0]){
-         serverQueue.connection.destroy();//voicechannel과의 연결을 끊음
-        queue.delete(guild.id);//queue에서 현 voicechannel guild.id를 삭제
-        
-      return;
-    }
-    let stream = await play_dl.stream(serverQueue.songs[0].url);
-    const resource = createAudioResource(stream.stream, {
-      inputType: stream.type
-  });
-    player.play(resource);
-  }
+  
 
 client.login(config.TEST_TOKEN);
