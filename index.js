@@ -1,5 +1,4 @@
 const Discord = require("discord.js");//discord 모듈 import 
-const config = require("./config.json");//설정파일 파싱 
 const Music = require('./music/music');
 
 const prefix = "!";
@@ -45,4 +44,4 @@ client.on('messageCreate', (message) => {//event 리스너 등록 messageCreate�
 
 
 
-client.login(config.BOT_TOKEN);
+client.login(process.env.BOT_TOKEN);
